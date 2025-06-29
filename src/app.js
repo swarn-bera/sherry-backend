@@ -1,6 +1,7 @@
 import express from "express";
 import errorHandler from "./middlewares/globalErrorHandler.middleware.js";
 import authRoutes from "./routes/auth.routes.js";
+import expenseRoutes from "./routes/expense.routes.js";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 
@@ -16,6 +17,9 @@ app.use(cookieParser());
 
 // Routes for Auth
 app.use("/api/v1/auth", authRoutes);
+
+// Routes for Expenses
+app.use("/api/v1/expense", expenseRoutes);
 
 app.use(errorHandler);
 

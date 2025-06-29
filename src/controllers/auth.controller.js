@@ -146,10 +146,18 @@ export const deleteProfile = asyncHandler(async (req, res, next) => {
         throw new apiError(401, "Unauthorized request");
     }
 
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) throw new apiError(404, "User not found");
+    
     await prisma.user.update({
         where: { id: userId },
         data: { refreshToken: null },
     });
+
+    await prisma.expense.deleteMany({
+        where: { userId: userId },
+    })
+
 
     await prisma.user.delete({
         where: { id: userId}
@@ -163,3 +171,25 @@ export const deleteProfile = asyncHandler(async (req, res, next) => {
 
     return res.status(200).json(new apiResponse(200, {}, "Profile deleted successfully"));
 });
+
+
+// get user by id
+export const getUserById = asyncHandler(async (req, res, next) => {
+    const userId = req.user.id;
+    if(!userId) {
+        throw new apiError(401, "Unauthorized request");
+    }
+
+    const user = await prisma.user.findUnique({ 
+        where: {id: userId},
+        include: {                  // include returns all the scalar fields of the related model (like everything including the expenses)
+            expenses: true,
+        }
+    })
+
+    if(!user){
+        throw new apiError(404, "User not found");
+    }
+
+    res.status(200).json(new apiResponse(200, user, "User found successfully"));
+})

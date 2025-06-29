@@ -24,11 +24,18 @@ model User {
 
 model Expense {
   id String @id @default(uuid())
-  reason String
+  reason String?
   amount Float
-  category String?
-  paidTo String?
+  category String    // FOOD GROCERIES TRANSPORT ENTERTAINMENT RENT BILLS OTHER
+  paidAs String?      // UPI names
   date DateTime @default(now())
+  status ExpenseStatus @default(PENDING)
   userId String
   user User @relation(fields: [userId], references: [id])
+}
+
+enum ExpenseStatus {
+  PENDING
+  PAID
+  CANCELLED
 }
